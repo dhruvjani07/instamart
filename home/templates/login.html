@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block start %}
+
+<div class="container mt-5 col-md-6 card shadow-lg p-5">
+    <h2 class="text-center text-success mb-4">Welcome Back!</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="form-group mb-4">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+        </div>
+
+        <div class="form-group mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success btn-lg">Log In</button>
+        </div>
+    </form>
+
+    <div class="mt-4 text-center">
+        <p class="mb-0">New to Grocery Instamart?</p>
+        <a href="{% url 'register' %}" class="btn btn-outline-primary mt-2">Create an Account</a>
+    </div>
+</div>
+
+{% endblock %}

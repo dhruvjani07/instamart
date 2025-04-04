@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block start %}
+
+<div class="container mt-5 card shadow-lg p-4">
+    <h2 class="text-primary mb-4">Your Shopping Cart</h2>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Action</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <a href="{% url 'remove_cart_items' item.item.uid %}" class="btn btn-sm btn-danger">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </a>
+                </td>
+                <td>
+                    <img src="{{ item.item.product.image.url }}" alt="{{ item.item.product.name }}" style="width:50px; height:50px;">
+                </td>
+                <td>{{ item.item.product.name }}</td>
+                <td>€{{ item.item.product.price }}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'decrease_qty' item.item.uid %}" class="btn btn-outline-secondary btn-sm">-</a>
+                        <span class="mx-2">{{ item.item.quantity }}</span>
+                        <a href="{% url 'increase_qty' item.item.uid %}" class="btn btn-outline-secondary btn-sm">+</a>
+                    </div>
+                </td>
+                <td>€{{ item.subtotal }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">Your cart is empty!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <td colspan="6" class="text-end fw-bold">Total:</td>
+                <td class="fw-bold">€{{ total_price }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    {% if cart_items %}
+    <hr>
+
+    <form action="{% url 'make_order' %}" method="post">
+        {% csrf_token %}
+        <h4 class="mt-4">Delivery Information</h4>
+
+        <div class="mb-3">
+            <label for="delivery_address" class="form-label">Delivery Address</label>
+            <input id="delivery_address" name="delivery_address" type="text" class="form-control" placeholder="Start typing your address..." required>
+        </div>
+
+        <h5 class="mt-4">Your Details</h5>
+        <p><strong>Name:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ user_profile.email }}</p>
+        <p><strong>Phone:</strong> {{ user_profile.phone }}</p>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-warning btn-sm px-4">Confirm & Place Order</button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+<!-- Google Maps Autocomplete Script -->
+<script>
+    function initAutocomplete() {
+        const input = document.getElementById("delivery_address");
+        if (input) {
+            const autocomplete = new google.maps.places.Autocomplete(input);
+        }
+    }
+</script>
+<<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initAutocomplete" async defer></script>
+
+{% endblock %}

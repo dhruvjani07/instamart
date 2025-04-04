@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block start %}
+
+<div class="container mt-5 card shadow-lg p-5">
+    <h2 class="text-center text-success mb-4">Order Confirmed ✅</h2>
+
+    <div class="text-center mb-4">
+        <p class="lead">Thank you for your order, <strong>{{ user.username }}</strong>!</p>
+        <p>Your groceries will be delivered to the address below:</p>
+    </div>
+
+    <div class="mb-4">
+        <h5>Customer Details</h5>
+        <p><strong>Email:</strong> {{ user.profile.email }}</p>
+        <p><strong>Phone:</strong> {{ user.profile.phone }}</p>
+        <p><strong>Delivery Address:</strong> {{ delivery_address }}</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Price (€)</th>
+                    <th>Qty</th>
+                    <th>Subtotal (€)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.item.product.name }}</td>
+                    <td>{{ item.item.product.price }}</td>
+                    <td>{{ item.item.quantity }}</td>
+                    <td>{{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-end">Total:</th>
+                    <th>€{{ total_price }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'products' %}" class="btn btn-outline-success">Continue Shopping</a>
+    </div>
+</div>
+
+{% endblock %}

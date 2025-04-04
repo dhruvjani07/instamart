@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Order Confirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333;">
+    <h2>Order Confirmed ✅</h2>
+    <p>Hello {{ user.username }},</p>
+    <p>Thank you for your order!</p>
+
+    <h4>Delivery Address:</h4>
+    <p>{{ delivery_address }}</p>
+
+    <h4>Your Order:</h4>
+    <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Price (€)</th>
+                <th>Qty</th>
+                <th>Subtotal (€)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.item.product.name }}</td>
+                <td>{{ item.item.product.price }}</td>
+                <td>{{ item.item.quantity }}</td>
+                <td>{{ item.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Total Price:</strong> €{{ total_price }}</p>
+
+    <p style="margin-top: 30px;">We hope to serve you again soon!</p>
+    <p><strong>- Grocery Instamart Team</strong></p>
+</body>
+</html>
