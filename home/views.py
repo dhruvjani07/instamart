@@ -14,14 +14,12 @@ from .models import Product, ProductCategory, Cart, CartItems, Profile
 
 
 def welcome(request):
-    """Landing page view. Redirects authenticated users to products."""
     if request.user.is_authenticated:
         return redirect('products')
     return render(request, 'welcome.html')
 
 
 def products(request):
-    """Display product list and filter by category."""
     category_slug = request.GET.get('category')
     products_list = Product.objects.all()
     categories = ProductCategory.objects.all()
@@ -39,7 +37,6 @@ def products(request):
 
 
 def login_page(request):
-    """Login page view."""
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -53,14 +50,12 @@ def login_page(request):
 
 
 def logout_view(request):
-    """Logout and redirect to welcome page."""
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect('welcome')
 
 
 def register_page(request):
-    """User registration view."""
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -77,21 +72,29 @@ def register_page(request):
 
 @login_required
 def profile_update(request):
-    """Update user profile."""
     user = request.user
     profile = user.profile
+
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=user)
         profile_form = ProfileUpdateForm(request.POST, instance=profile)
+
         if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
+            user = user_form.save()
+
+            profile = profile_form.save(commit=False)
+            profile.email = user.email  # sync email
+            profile.phone = profile_form.cleaned_data['phone']  # update phone
+            profile.save()
+
             messages.success(request, 'Your profile has been updated successfully!')
+            return redirect('profile_update')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = UserUpdateForm(instance=user)
         profile_form = ProfileUpdateForm(instance=profile)
+
     return render(request, 'profile_update.html', {
         'user_form': user_form,
         'profile_form': profile_form
@@ -100,7 +103,6 @@ def profile_update(request):
 
 @login_required
 def add_cart(request, product_uid):
-    """Add item to user's cart."""
     product = get_object_or_404(Product, uid=product_uid)
     cart, _ = Cart.objects.get_or_create(user=request.user, is_paid=False)
     cart_item, created = CartItems.objects.get_or_create(cart=cart, product=product)
@@ -112,7 +114,6 @@ def add_cart(request, product_uid):
 
 @login_required
 def increase_qty(request, cart_item_uid):
-    """Increase quantity of item in cart."""
     item = get_object_or_404(CartItems, uid=cart_item_uid, cart__user=request.user)
     item.quantity += 1
     item.save()
@@ -121,7 +122,6 @@ def increase_qty(request, cart_item_uid):
 
 @login_required
 def decrease_qty(request, cart_item_uid):
-    """Decrease quantity of item in cart or remove it."""
     item = get_object_or_404(CartItems, uid=cart_item_uid, cart__user=request.user)
     item.quantity -= 1
     if item.quantity <= 0:
@@ -133,7 +133,6 @@ def decrease_qty(request, cart_item_uid):
 
 @login_required
 def remove_cart_items(request, cart_item_uid):
-    """Remove item from cart."""
     cart_item = get_object_or_404(
         CartItems,
         uid=cart_item_uid,
@@ -147,7 +146,6 @@ def remove_cart_items(request, cart_item_uid):
 
 @login_required
 def cart(request):
-    """Display cart with all items and total price."""
     cart_obj, _ = Cart.objects.get_or_create(user=request.user, is_paid=False)
     cart_items = CartItems.objects.filter(cart=cart_obj)
     items_with_subtotals = [
@@ -166,7 +164,6 @@ def cart(request):
 
 @login_required
 def make_order(request):
-    """Handle order creation, save and email confirmation."""
     if request.method == 'POST':
         delivery_address = request.POST.get('delivery_address')
         cart_obj = get_object_or_404(Cart, user=request.user, is_paid=False)
@@ -206,14 +203,12 @@ def make_order(request):
 
 @login_required
 def orders(request):
-    """Show user's past paid orders."""
     past_orders = Cart.objects.filter(user=request.user, is_paid=True).order_by('-date')
     return render(request, 'orders.html', {'orders': past_orders})
 
 
 @login_required
 def checkout(request):
-    """Checkout view to show summary before order."""
     cart_obj, _ = Cart.objects.get_or_create(user=request.user, is_paid=False)
     cart_items = CartItems.objects.filter(cart=cart_obj)
     items_with_subtotals = [
