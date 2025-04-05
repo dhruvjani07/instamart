@@ -33,7 +33,7 @@ class CartItemsAdmin(admin.ModelAdmin):
     get_user.short_description = 'User'
     get_user.admin_order_field = 'cart__user'
 
-
+#procfile
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'phone', 'email')
