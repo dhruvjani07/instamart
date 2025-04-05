@@ -7,7 +7,7 @@ class ProductCategoryAdmin(admin.ModelAdmin):
     list_display = ('category_name',)
     search_fields = ('category_name',)
 
-
+#admin view
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price')  
