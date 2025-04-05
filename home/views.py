@@ -12,7 +12,7 @@ from django.utils.html import strip_tags
 from .forms import RegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Product, ProductCategory, Cart, CartItems, Profile
 
-
+#welcom page view
 def welcome(request):
     if request.user.is_authenticated:
         return redirect('products')
