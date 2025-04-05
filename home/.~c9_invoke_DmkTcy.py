@@ -7,14 +7,14 @@ class ProductCategoryAdmin(admin.ModelAdmin):
     list_display = ('category_name',)
     search_fields = ('category_name',)
 
-#admin view
+#admin
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'price')  
     list_filter = ('category',)
     search_fields = ('name',)
 
-
+#register view
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ('user', 'is_paid', 'date', 'delivery_address')
